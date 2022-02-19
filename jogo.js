@@ -68,7 +68,13 @@ const flappyBird = { //criação do objeto
     altura: 24,
     x:10, //tamanho da imagem
     y:50,
-
+    gravidade:0.25,
+    velocidade:0,
+    atualizar(){
+        flappyBird.velocidade=flappyBird.velocidade+flappyBird.gravidade;
+        console.log(flappyBird.velocidade);
+        flappyBird.y=flappyBird.y+flappyBird.velocidade;
+    },
     //adicionando uma função ao objeto
     desenhar(){
         contexto.drawImage(
@@ -81,12 +87,76 @@ const flappyBird = { //criação do objeto
     }
 }
 
+const telaDeInicio = {
+    spriteX: 134, //inicio do quadro de seleção
+    spriteY: 0,
+    largura: 174, //fim do quadro de seleção
+    altura: 152,
+    x:(canvas.width/2)-174/2, //tamanho da imagem
+    y:50,
+    desenhar(){
+        contexto.drawImage(       
+            sprites,
+            telaDeInicio.spriteX, telaDeInicio.spriteY,
+            telaDeInicio.largura, telaDeInicio.altura,
+            telaDeInicio.x,telaDeInicio.y,
+            telaDeInicio.largura,telaDeInicio.altura
+        );
+    }
+}
+
+//CRIAÇÃO DE TELAS
+
+
+let telaAtiva = {};
+
+function mudaDeTela(novaTela){
+    telaAtiva = novaTela; 
+}
+
+const telas = {
+    inicio:{
+        desenhar(){
+            planoDeFundo.desenhar();
+            telaDeInicio.desenhar();
+            chao.desenhar();
+            flappyBird.desenhar();
+        },
+        click(){
+            mudaDeTela(telas.telaDeJogo)
+        },
+        atualizar(){
+
+        }
+    },
+
+    telaDeJogo: {
+        desenhar(){
+            planoDeFundo.desenhar();
+            chao.desenhar();
+            flappyBird.desenhar();
+        },
+        atualizar(){
+            flappyBird.atualizar();
+        }
+    }
+};
+
+
 
 function loop(){ //atualização da tela
-    planoDeFundo.desenhar();
-    chao.desenhar();
-    flappyBird.desenhar();
+    
+    telaAtiva.desenhar();
+    telaAtiva.atualizar();
     requestAnimationFrame(loop);
 }
 
+window.addEventListener('click', function(){
+    if (telaAtiva.click){
+        telaAtiva.click();
+    }
+});
+
+
+mudaDeTela(telas.inicio);
 loop();
